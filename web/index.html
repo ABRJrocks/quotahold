@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'none'; base-uri 'none'; form-action 'none'"
+    />
+    <title>QuotaHold | Keep unknown calls accounted for</title>
+    <meta
+      name="description"
+      content="Rehearse usage reservations, response loss and recovery with QuotaHold's interactive policy playground."
+    />
+    <link rel="stylesheet" href="web/app.css" />
+  </head>
+  <body>
+    <a class="skip" href="#workbench">Skip to playground</a>
+    <header>
+      <a class="brand" href="./"
+        ><span class="symbol" aria-hidden="true">Q<span></span></span
+        >QuotaHold</a
+      >
+      <nav aria-label="Project">
+        <a href="https://github.com/ABRJrocks/quotahold"
+          >Source & integration ↗</a
+        ><a href="https://github.com/ABRJrocks/quotahold/releases/tag/v0.1.0"
+          >v0.1.0</a
+        >
+      </nav>
+    </header>
+    <main>
+      <section class="intro">
+        <div>
+          <p class="eyebrow">Usage reservations for local workers</p>
+          <h1>Keep unknown calls<br />accounted for.</h1>
+          <p class="lead">
+            Reserve allowance before a call starts. When its response goes
+            missing, keep the hold until you know what happened.
+          </p>
+        </div>
+        <div class="context">
+          <strong>Try the failure case</strong>
+          <p>
+            Reserve a call, start it, then lose its response. Advance the clock
+            and watch its allowance stay held.
+          </p>
+          <button id="scenario" class="subtle">
+            Load response-loss scenario
+          </button>
+        </div>
+      </section>
+      <div class="demo-note">
+        <span class="demo-dot" aria-hidden="true"></span>
+        <p>
+          <strong>Interactive policy rehearsal.</strong> Uses the SDK's
+          admission arithmetic with simulated calls in memory. No provider
+          requests, durable storage or billing connection.
+        </p>
+      </div>
+      <div class="workbench" id="workbench">
+        <aside class="policy">
+          <h2>Set the allowance</h2>
+          <p class="hint">Applying a policy resets this rehearsal.</p>
+          <form id="policy-form">
+            <label
+              >Units per window<input
+                id="capacity"
+                type="number"
+                min="1"
+                max="1000000000"
+                value="240"
+                required /></label
+            ><label
+              >Concurrent call limit<input
+                id="concurrency"
+                type="number"
+                min="1"
+                max="1000"
+                value="3"
+                required /></label
+            ><label
+              >Window length<select id="period">
+                <option value="60">60 seconds</option>
+                <option value="3600">1 hour</option>
+                <option value="86400">1 day</option>
+              </select></label
+            ><button class="primary" type="submit">Apply policy & reset</button>
+          </form>
+          <div class="clock-block">
+            <p class="eyebrow">Rehearsal clock</p>
+            <p class="clock mono" id="clock">00:00</p>
+            <p class="hint" id="window-label"></p>
+            <div class="clock-actions">
+              <button id="advance-30">+30 seconds</button
+              ><button id="advance-window">Next window</button>
+            </div>
+          </div>
+          <div class="rule">
+            <strong>A start deadline applies only before a call starts.</strong>
+            <p>
+              Started and uncertain calls keep their units and slot until actual
+              usage is reconciled.
+            </p>
+          </div>
+        </aside>
+        <section class="canvas" aria-label="Allowance and calls">
+          <div class="balance-title">
+            <h2>Allowance ledger</h2>
+            <p id="slots" class="mono"></p>
+          </div>
+          <div class="balance">
+            <div class="available">
+              <strong id="available" class="mono">240</strong
+              ><span>units available</span>
+            </div>
+            <div class="balance-pair">
+              <div>
+                <strong id="spent" class="mono">0</strong
+                ><span>settled this window</span>
+              </div>
+              <div>
+                <strong id="held" class="mono">0</strong
+                ><span>held across windows</span>
+              </div>
+            </div>
+          </div>
+          <div
+            class="rail"
+            role="img"
+            aria-label="Allowance distribution"
+            id="rail"
+          >
+            <div id="spent-bar" class="spent-segment"></div>
+            <div id="held-bar" class="held-segment"></div>
+          </div>
+          <div class="legend">
+            <span><i class="spent-segment"></i>Settled</span
+            ><span><i class="held-segment"></i>Held</span
+            ><span><i class="free-segment"></i>Available</span>
+          </div>
+          <p id="overage" class="overage" hidden></p>
+          <form id="reserve-form" class="reserve-form">
+            <label
+              >Request key<input
+                id="request-key"
+                value="call-1"
+                required
+                maxlength="128"
+                autocomplete="off" /></label
+            ><label
+              >Estimated units<input
+                id="estimate"
+                type="number"
+                value="80"
+                min="1"
+                max="1000000000"
+                required /></label
+            ><button class="primary" type="submit">Reserve allowance</button>
+            <p>
+              Re-enter a key to rehearse replay blocking. Unstarted holds have a
+              30-second start deadline.
+            </p>
+          </form>
+          <div class="calls-heading">
+            <h2>Call lifecycle</h2>
+            <span id="call-count" class="hint">No calls yet</span>
+          </div>
+          <div id="calls" class="calls" aria-live="polite"></div>
+          <p class="message" id="message" role="status" aria-live="polite">
+            Ready. Reserve a call to begin.
+          </p>
+          <section class="activity">
+            <div class="calls-heading">
+              <h2>Activity</h2>
+              <span class="hint">Latest first</span>
+            </div>
+            <ol id="activity" tabindex="0" aria-label="Activity history"></ol>
+          </section>
+        </section>
+      </div>
+      <section class="integration">
+        <div>
+          <p class="eyebrow">Add it around your worker</p>
+          <h2>One reservation.<br />One start permission.</h2>
+          <p>
+            The Node.js SDK uses a local SQLite ledger to coordinate cooperating
+            processes. Request keys survive restarts; uncertain usage stays
+            visible.
+          </p>
+          <a
+            href="https://github.com/ABRJrocks/quotahold/blob/main/docs/integration.md"
+            >Read the integration guide ↗</a
+          >
+        </div>
+        <pre><code>const hold = ledger.reserve(scope, {
+  key: job.id,
+  fingerprint: payloadHash,
+  estimate: maxUnits,
+});
+
+if (hold.kind === 'reserved') {
+  ledger.start(scope, hold.reservation.id);
+  // Call your provider, then settle usage.
+}</code></pre>
+      </section>
+      <footer>
+        <p>QuotaHold v0.1.0 · MIT · Built for local Node.js workers</p>
+        <p>
+          Units are supplied by your application. Underestimates can exceed the
+          allowance. The playground is a simulation.
+        </p>
+      </footer>
+    </main>
+    <script type="module" src="web/app.js"></script>
+  </body>
+</html>
