@@ -32,7 +32,7 @@ function update(message = "Ready. Reserve a call to begin.", error = false) {
   $("overage").textContent =
     `${u.overage} units above this window's capacity. Actual usage is kept visible; new work is denied.`;
   $("call-count").textContent =
-    `${session.holds.length} calls in this rehearsal`;
+    `${session.holds.length} ${session.holds.length === 1 ? "call" : "calls"} in this rehearsal`;
   $("calls").replaceChildren();
   if (!session.holds.length)
     $("calls").append(
