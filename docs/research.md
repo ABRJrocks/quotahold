@@ -6,7 +6,7 @@ QuotaHold is an embedded alternative for cooperating Node.js workers sharing a l
 
 [SQLite transactions](https://www.sqlite.org/lang_transaction.html) and [isolation](https://www.sqlite.org/isolation.html) provide a single writer and atomic admission under BEGIN IMMEDIATE. A busy database fails the operation rather than admitting work from an in-memory fallback. The ledger uses default DELETE journaling and synchronous FULL writes on a local filesystem. No cross-host or network-filesystem coordination is claimed.
 
-[Node's built-in SQLite API](https://nodejs.org/api/sqlite.html) executes synchronously and supplies the database connection without an npm runtime dependency. QuotaHold requires Node 24.15+ and tests Node 24 and 26. Upstream SQLite API stability can vary between Node releases; the package uses only the basic connection and prepared statement operations.
+[Node's built-in SQLite API](https://nodejs.org/api/sqlite.html) executes synchronously and supplies the database connection without an npm runtime dependency. QuotaHold requires Node 24.15+ and the CI matrix targets Node 24 and 26. Upstream SQLite API stability can vary between Node releases; the package uses only the basic connection and prepared statement operations.
 
 [Stripe's idempotency documentation](https://docs.stripe.com/api/idempotent_requests) illustrates the importance of stable request keys and conflicting payload checks. QuotaHold's reservation idempotency is local and retained for the life of the ledger. It does not make a provider request idempotent or cache its response.
 

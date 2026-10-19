@@ -1,0 +1,1 @@
+{ "capacity": 10000, "periodSeconds": 3600, "maxInflight": 4, "unit": "tokens" }
