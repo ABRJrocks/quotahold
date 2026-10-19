@@ -16,16 +16,16 @@ export async function runCall(ledger, scope, input, call) {
     );
   const hold = ledger.start(scope, admission.reservation.id);
   try {
-    const result = await call({
+    const { value, actual, receipt } = await call({
       id: hold.id,
       key: hold.key,
       estimate: hold.estimate,
     });
     const settled = ledger.settle(scope, hold.id, {
-      actual: result.actual,
-      receipt: result.receipt,
+      actual,
+      receipt,
     });
-    return { value: result.value, reservation: settled };
+    return { value, reservation: settled };
   } catch (error) {
     try {
       ledger.uncertain(scope, hold.id);
