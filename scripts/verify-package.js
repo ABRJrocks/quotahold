@@ -55,20 +55,33 @@ try {
     `import {Ledger,runCall} from 'quotahold';import assert from 'node:assert/strict';const ledger=Ledger.create('./smoke.db');try {ledger.configure('demo',{capacity:100,periodSeconds:60,maxInflight:2,unit:'units'});const result=await runCall(ledger,'demo',{key:'k',fingerprint:'a'.repeat(64),estimate:40},async()=>({value:'ok',actual:25,receipt:'r1'}));assert.equal(result.value,'ok');assert.equal(ledger.status('demo').spent,25);}finally{ledger.close();}console.log('Installed package smoke check passed');`,
   );
   console.log(run(process.execPath, [check], { cwd: temp }).trim());
-  console.log(
+  const example = JSON.parse(
     run(
       process.execPath,
       [join(temp, "node_modules/quotahold/examples/http-worker.js")],
       { cwd: temp },
-    ).trim(),
+    ),
   );
-  console.log(
+  assert.equal(example.verified, true);
+  assert.equal(example.httpRequests, 2);
+  assert.equal(
     run(
       process.execPath,
       [join(temp, "node_modules/quotahold/src/cli.js"), "--version"],
       { cwd: temp },
     ).trim(),
+    "0.1.0",
   );
+  if (process.platform !== "win32")
+    assert.equal(
+      run(
+        process.execPath,
+        [join(temp, "node_modules/.bin/quotahold"), "--version"],
+        { cwd: temp },
+      ).trim(),
+      "0.1.0",
+    );
+  console.log("Installed CLI entry point and HTTP worker checks passed");
   console.log(
     `Verified ${packed.filename}: ${packed.entryCount} files, zero runtime dependencies`,
   );

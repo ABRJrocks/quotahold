@@ -4,7 +4,6 @@ import { mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { createHash } from "node:crypto";
-import { pathToFileURL } from "node:url";
 import assert from "node:assert/strict";
 import { Ledger, runCall } from "../src/index.js";
 
@@ -93,5 +92,4 @@ export async function httpDemo() {
     rmSync(root, { recursive: true, force: true });
   }
 }
-if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href)
-  console.log(JSON.stringify(await httpDemo(), null, 2));
+if (import.meta.main) console.log(JSON.stringify(await httpDemo(), null, 2));

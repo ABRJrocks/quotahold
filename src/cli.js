@@ -3,7 +3,6 @@ import { openSync, readSync, closeSync } from "node:fs";
 import { parseArgs } from "node:util";
 import { Ledger } from "./ledger.js";
 import { QuotaError } from "./policy.js";
-import { pathToFileURL } from "node:url";
 
 export function main(argv = process.argv.slice(2)) {
   let ledger;
@@ -116,5 +115,4 @@ export function main(argv = process.argv.slice(2)) {
     ledger?.close();
   }
 }
-if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href)
-  process.exitCode = main();
+if (import.meta.main) process.exitCode = main();
