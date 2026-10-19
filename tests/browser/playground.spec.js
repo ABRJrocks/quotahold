@@ -107,3 +107,26 @@ for (const width of [1440, 390])
       fullPage: true,
     });
   });
+test("downloaded single-file playground works directly from disk", async ({
+  page,
+}) => {
+  const { resolve } = await import("node:path");
+  const { pathToFileURL } = await import("node:url");
+  const errors = [],
+    requests = [];
+  page.on("pageerror", (error) => errors.push(error.message));
+  page.on("request", (request) => requests.push(request.url()));
+  const url = pathToFileURL(resolve("site/quotahold-playground.html")).href;
+  await page.goto(url);
+  await page
+    .getByRole("button", { name: "Load response-loss scenario" })
+    .click();
+  await expect(page.locator("#held")).toHaveText("80");
+  await page.getByLabel("Actual units for report-worker").fill("30");
+  await page
+    .getByRole("button", { name: "Reconcile report-worker", exact: true })
+    .click();
+  await expect(page.locator("#held")).toHaveText("0");
+  expect(errors).toEqual([]);
+  expect(requests.filter((request) => request !== url)).toEqual([]);
+});

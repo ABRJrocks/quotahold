@@ -8,9 +8,11 @@ A small Node.js library for AI workers, API jobs and local automation that share
 [![Node 24.15+](https://img.shields.io/badge/Node-24.15%2B-315b50)](https://nodejs.org/)
 [![MIT](https://img.shields.io/badge/License-MIT-555555)](LICENSE)
 
-[**Try the policy playground**](https://abrjrocks.github.io/quotahold/) · [Download v0.1.0](https://github.com/ABRJrocks/quotahold/releases/tag/v0.1.0) · [Integration guide](docs/integration.md) · [Lifecycle contract](docs/contract.md)
+[**Download the offline playground**](https://github.com/ABRJrocks/quotahold/releases/download/v0.1.0/quotahold-playground.html) · [Hosted playground](https://abrjrocks.github.io/quotahold/) · [Download v0.1.0](https://github.com/ABRJrocks/quotahold/releases/tag/v0.1.0) · [Integration guide](docs/integration.md) · [Lifecycle contract](docs/contract.md)
 
 ![QuotaHold showing an uncertain call retaining its allowance after a window change](docs/playground.png)
+
+Download `quotahold-playground.html` from the release and open it directly in a browser. The self-contained version needs no server or installation. The hosted version is deployed by the verification workflow.
 
 ## The problem it handles
 

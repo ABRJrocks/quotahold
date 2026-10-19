@@ -78,6 +78,8 @@ For a missing response, mark `uncertain` instead of cancelling. Add a `note` to 
 
 ## Playground and verification
 
-The public playground uses the exact `decide` and `availability` functions imported by the SDK. Its lifecycle state lives in browser memory. Parity tests compare a recovery/rollover sequence with the SQLite SDK. It illustrates the accounting policy; it does not simulate cross-process locking, persist data, call providers or measure performance.
+The hosted and self-contained offline playgrounds use the exact `decide` and `availability` functions imported by the SDK. Its lifecycle state lives in browser memory. Parity tests compare a recovery/rollover sequence with the SQLite SDK. It illustrates the accounting policy; it does not simulate cross-process locking, persist data, call providers or measure performance.
 
 The working HTTP example makes two requests to a temporary loopback server, blocks a replay before a third request, retains an injected lost-response reservation, and reconciles it from the server receipt. The fault is deliberately injected after the server responds. Multi-process tests separately verify quota races, duplicate keys, single-start permissions, process exit and lock failures.
+
+The release includes `quotahold-playground.html`. Open that single file directly in a browser; it has no module fetches, external assets or network calls. The offline browser check exercises the actual file with a `file:` URL.
