@@ -1,0 +1,9 @@
+node_modules/
+*.db
+*.db-*
+.env
+dist/
+site/
+test-results/
+playwright-report/
+*.tgz
