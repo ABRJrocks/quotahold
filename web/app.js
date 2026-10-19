@@ -44,6 +44,8 @@ function update(message = "Ready. Reserve a call to begin.", error = false) {
     );
   for (const hold of [...session.holds].reverse()) {
     const row = node("article", undefined, "call");
+    row.tabIndex = -1;
+    row.dataset.id = String(hold.id);
     const info = node("div", undefined, "call-info");
     const title = node("div", undefined, "call-key");
     title.append(
@@ -62,12 +64,15 @@ function update(message = "Ready. Reserve a call to begin.", error = false) {
     const action = (label, key, value) => {
       const b = node("button", label);
       b.setAttribute("aria-label", `${label} ${hold.key}`);
-      b.addEventListener("click", () =>
+      b.addEventListener("click", () => {
         attempt(
           () => session.act(hold.id, key, value?.()),
           `${hold.key}: ${label.toLowerCase()} recorded.`,
-        ),
-      );
+        );
+        [...$("calls").children]
+          .find((item) => item.dataset.id === String(hold.id))
+          ?.focus();
+      });
       actions.append(b);
     };
     if (hold.state === "reserved") {
